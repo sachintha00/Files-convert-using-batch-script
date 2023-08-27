@@ -1,14 +1,17 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set "inputFile=*.txt"
-set "outputFile=*.org"
+set "inputFolder=test2"
+set "outputFolder=test1"
 
-del %outputFile% 2>nul
+set "rawFileExtension=org"
+set "backupFileExtension=txt"
 
-for %%A in (%inputFile%) do (
+if not exist "%outputFolder%" mkdir "%outputFolder%"
+
+for %%A in ("%inputFolder%\*.%rawFileExtension%") do (
     set "inputFile=%%A"
-    set "outputFile=%%~nA.org"
+    set "outputFile=%outputFolder%\%%~nA.%backupFileExtension%"
     
     (
         for /f "usebackq delims=" %%B in ("!inputFile!") do (
@@ -21,5 +24,7 @@ for %%A in (%inputFile%) do (
         )
     ) > "!outputFile!"
 )
+
+rd /s /q "%inputFolder%"
 
 endlocal
