@@ -1,29 +1,34 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set "sourceFile=input.txt"
-set "backupFile=org_names_backup.txt"
+set "filename=backup.txt"
 
-if not exist "%sourceFile%" (
-    echo Source file "%sourceFile%" not found.
-    exit /b
+set "counter=0"
+for /f "tokens=2" %%a in (backup.txt) do (
+    set /a "counter+=1"
+    set "word[!counter!]=%%a"
 )
 
-if not exist "%backupFile%" (
-    echo Backup file "%backupFile%" not found.
-    exit /b
-)
-
-echo Checking and copying missing .org names from %backupFile% to %sourceFile%...
-
-for /f "usebackq delims=" %%a in ("%backupFile%") do (
-    set "orgName=%%a"
-    findstr /i "!orgName!" "%sourceFile%" > nul
+for /l %%i in (1,1,%counter%) do (
+    set "wordToSearch=!word[%%i]!"
+    findstr /i /c:"!wordToSearch!" input.txt > nul
     if errorlevel 1 (
-        echo !orgName! >> "%sourceFile%"
+        echo !wordToSearch! not found in input.txt
+        for /f "tokens=1,*" %%a in (%filename%) do (
+            set "number=%%a"
+            set "domain=%%b"
+            set "domain=!domain: =!"
+
+            @REM echo Number: !number!
+            @REM echo Domain: !domain!
+        )
+        if "%wordToSearch%"=="%Domain%" (
+            echo !number!
+        )
+    ) else (
+        echo !wordToSearch!
     )
 )
 
-echo Checked and copied missing .org names.
-
 endlocal
+pause
